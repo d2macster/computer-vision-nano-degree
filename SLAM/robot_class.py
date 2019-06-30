@@ -91,12 +91,21 @@ class robot:
         ## TODO: return the final, complete list of measurements
         
         measurements = []
-        for i in range(self.num_landmarks):
-            l = self.landmarks[i]
-            dx = abs(l[0] - self.x + self.rand() * self.measurement_noise)
-            dy = abs(l[1] - self.y + self.rand() * self.measurement_noise)
-            if self.measurement_range == -1  or (dx <= self.measurement_range and dy <= self.measurement_range):
-                measurements.append([i, dx, dy])
+        for l_id, l in enumerate(self.landmarks):
+            dx, dy = l[0] - self.x, l[1] - self.y
+            d = np.sqrt(dx*dx + dy*dy)
+            if self.measurement_range != -1 and  d > self.measurement_range:
+                continue
+                
+            dx += self.rand() * self.measurement_noise
+            dy += self.rand() * self.measurement_noise
+            
+            d = np.sqrt(dx*dx + dy*dy)
+            if self.measurement_range != -1 and  d > self.measurement_range:
+                continue
+            
+            measurements.append([l_id, dx, dy])
+            
         return measurements
 
 
